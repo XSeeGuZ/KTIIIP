@@ -15,6 +15,7 @@ public:
     bool getAlive() { return alive;}
     void setAlive(bool isAlive) { alive = isAlive; }
     bool getAttacking() { return Attacking;}
+    float getMaxHp(){return maxHealth;}
 
 protected:
     Texture2D texture = LoadTexture("characters/chara_idle.png");
@@ -53,7 +54,8 @@ protected:
     float KB = 40.f;
     bool Attacking = false;
     bool isEnemy;
-
+    float maxHealth{};
+    float damage{};
 private:
     bool alive{true};
 };

@@ -18,7 +18,8 @@ public:
     Vector2 getKB_V() { return KB_V; }
     float getKB() { return KB; }
     void setKB_V(Vector2 enemyScreenPos);
-
+    void heal(int size);
+    
 private:
     int windowWidth;
     int windowHeight;

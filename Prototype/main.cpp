@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include"Heal.h"
 using namespace std;
 
 static const int Windowwidth = 1280, Windowheight = 720;
@@ -16,13 +17,14 @@ void AddEnemy(vector<Enemy *> *ptr, Texture2D idle, Texture2D move, Texture2D ma
     ptr->push_back(new Enemy{idle,
                              move,
                              map.width,
-                             map.height});
+                             map.height,10.f,100.f,2.5f});
 }
 
 int main()
 {
     int wave = 0;
     int EnemyAmount = 10;
+    bool isEnemyDead[EnemyAmount]{false};
     InitWindow(Windowwidth, Windowheight, "Game");
 
     Texture2D map = LoadTexture("tiles/map.png"); // Load Map
@@ -34,6 +36,9 @@ int main()
     Prop props[2]{Prop{Vector2{600.f * mapScale, 600.f * mapScale}, LoadTexture("characters/weapon_sword.png")},
                   Prop{Vector2{400.f * mapScale, 300.f * mapScale}, LoadTexture("characters/weapon_sword.png")}};
 
+    Heal *heal = new Heal[2];
+    heal[0] =Heal{Vector2{300.f*mapScale,200.f*mapScale},LoadTexture("characters/weapon_sword_1.png"),1};
+    heal[1] =Heal{Vector2{400.f*mapScale,200.f*mapScale},LoadTexture("characters/weapon_sword_1.png"),1};
     /*Enemy goblin{
         LoadTexture("characters/goblin_idle_spritesheet.png"),
         LoadTexture("characters/goblin_run_spritesheet.png"),
@@ -79,6 +84,9 @@ int main()
         {
             prop.render(AiPalm.getWorldPos()); // Draw props
         }
+        for (unsigned int i = 0; i < 2; i++){
+            heal[i].Render(AiPalm.getWorldPos());
+        }
 
         AiPalm.tick(GetFrameTime()); // Render character
         for (auto enemy : enemies)
@@ -89,17 +97,29 @@ int main()
             }
         }
 
+        for (unsigned int i = 0; i < 2; i++){
+            if((CheckCollisionRecs(heal[i].GetCollisionRec(AiPalm.getWorldPos()),AiPalm.getCollisionRec()))&&(heal[i].getIsUsed()==false)){
+                AiPalm.heal(heal[i].getSize());
+                heal[i].Used();
+            }
+        }
+
         if (!AiPalm.getAlive()) // Character is dead
         {
-            DrawText("Game Over!", 55.f, 45.f, 50, RED);
+            DrawRectangle(0.f,0.f,Windowwidth,Windowheight,RED);
+            DrawText("Game Over",Windowwidth*0.1f,Windowheight*0.4f,200,WHITE);
             EndDrawing();
             continue;
         }
         else
         {
-            string health = "Health: ";
-            health.append(to_string(AiPalm.getHealth()));
-            DrawText(health.c_str(), 55.f, 45.f, 50, WHITE);
+            std::string knightHealth{""};
+            knightHealth.append(std::to_string(AiPalm.getHealth()),0,5);
+            DrawText(knightHealth.c_str(),Windowwidth*0.42f,Windowheight *0.015f,50,WHITE);
+            std::string maxHp{""};
+            maxHp.append("/");
+            maxHp.append(std::to_string(AiPalm.getMaxHp()),0,3);
+            DrawText(maxHp.c_str(),Windowwidth *0.48f,Windowheight *0.015f,50,WHITE);
         }
 
         if (AiPalm.getWorldPos().x < 0 || AiPalm.getWorldPos().y < 0 || // check out of bounds for character
@@ -165,8 +185,16 @@ int main()
                 }
             }
         }
-
+        //delete enemy when they're dead *****bug with vector<Enemy*>***** only work with normal pointer dynamic allocation
+        /*for (unsigned int i = 0; i < EnemyAmount ; i++){
+            if(!enemies->at(i)->getAlive()&&!isEnemyDead[i]){
+                isEnemyDead[i]=true;
+                delete &enemies[i];
+            }
+        }*/
+        
         EndDrawing();
+        
     }
     CloseWindow();
 }

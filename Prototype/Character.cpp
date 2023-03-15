@@ -13,6 +13,7 @@ Character::Character(int winWidth, int winHeight, int mapW, int mapH) : windowWi
     // worldPos = {static_cast<float>(GetRandomValue(10 * scale, mapWidth - 100)), static_cast<float>(GetRandomValue(6 * scale, mapHeight - 60))};
     worldPos = {800.f, 800.f};
     isEnemy = false;
+    maxHealth=health;
 }
 
 Vector2 Character::getScreenPos()
@@ -162,6 +163,10 @@ void Character::tick(float deltaTime)
         if (atk_interval > 0)
             atk_interval--;
     }
+    Rectangle healthBarLine{0.f, 0.f,static_cast<float>(windowWidth),windowHeight*0.09f};
+    Rectangle healthBar{0.f, 0.f,health/maxHealth*windowWidth,windowHeight*0.09f};
+    DrawRectangleRec(healthBar,RED);
+    DrawRectangleLinesEx(healthBarLine,5.f,BLACK);
 }
 
 void Character::takeDmg(int dmg, Vector2 kbDirection, float kbMagnitude)
@@ -182,4 +187,37 @@ void Character::takeDmg(int dmg, Vector2 kbDirection, float kbMagnitude)
 void Character::setKB_V(Vector2 enemyScreenPos)
 {
     KB_V = Vector2Scale(Vector2Normalize(Vector2Subtract(enemyScreenPos, getScreenPos())), 100.f);
+}
+
+
+void Character::heal(int size){
+    float s{0.2f*maxHealth};
+    float m{0.5f*maxHealth};
+    float l{0.8f*maxHealth};
+    switch (size)
+    {
+    case 1:
+        if((health+s)>=maxHealth){ 
+            health=maxHealth;
+            }
+        else{
+            health+=s;
+        }
+        break;
+    case 2:
+        if((health+m)>=maxHealth)
+            health=maxHealth;
+        else
+            health+=m;
+        break;
+    case 3:
+        if((health+l)>=maxHealth)
+            health=maxHealth;
+        else
+            health+=l;
+        break;
+    default:
+            health+=0;
+        break;
+    }
 }

@@ -6,7 +6,7 @@ public:
     void render(Vector2 charaPos);
     Rectangle getCollisionRec(Vector2 charaPos);
 private:
-    Texture2D texture{};
     Vector2 worldPos{};
+    Texture2D texture{};
     float scale = 4.f;
 };

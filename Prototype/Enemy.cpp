@@ -2,8 +2,14 @@
 #include "raylib.h"
 #include "raymath.h"
 #include <string>
+Enemy::Enemy(){
 
-Enemy::Enemy(Texture2D idle_tex, Texture2D move_tex, int mapW, int mapH)
+}
+Enemy::~Enemy(){
+    
+}
+
+Enemy::Enemy(Texture2D idle_tex, Texture2D move_tex, int mapW, int mapH,float dmg,float hp,float spd)
 {
     worldPos = {static_cast<float>(GetRandomValue(170.f * enemyScale, 840.f * enemyScale)), static_cast<float>(GetRandomValue(100.f * enemyScale, 920.f * enemyScale))};
     // worldPos = {500.f * enemyScale, 600.f * enemyScale};
@@ -16,6 +22,10 @@ Enemy::Enemy(Texture2D idle_tex, Texture2D move_tex, int mapW, int mapH)
     hit_interval = 0;
     mode = 1;
     isEnemy = true;
+    health=hp;
+    maxHealth=health;
+    damage = dmg;
+    speed = spd;
 }
 
 void Enemy::tick(float deltaTime)
@@ -98,7 +108,7 @@ void Enemy::tick(float deltaTime)
     if (Vector2Length(velocity) != 0) // moving
     {
         texture = move;
-        worldPos = Vector2Add(worldPos, velocity);
+        worldPos = Vector2Add(worldPos,  Vector2Scale(Vector2Normalize(velocity), speed));
 
         velocity.x < 0.f ? rightLeft = -1.f : rightLeft = 1.f;
     }
@@ -125,6 +135,11 @@ void Enemy::tick(float deltaTime)
 
     if (dmg_interval == true && Attacking == false)
         dmg_interval = false;
+    
+    Rectangle healthBarLine{getScreenPos().x, getScreenPos().y-20.f,width*scale*2,height};
+    Rectangle healthBar{getScreenPos().x, getScreenPos().y-20.f,health/maxHealth*width*scale*2,height};
+    DrawRectangleRec(healthBar,RED);
+    DrawRectangleLinesEx(healthBarLine,5.f,BLACK);
 }
 
 Vector2 Enemy::getScreenPos()

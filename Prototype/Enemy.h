@@ -5,7 +5,9 @@
 class Enemy : public BaseChara
 {
 public:
-    Enemy(Texture2D idle_tex, Texture2D move_tex, int mapW, int mapH);
+    Enemy();
+    ~Enemy();
+    Enemy(Texture2D idle_tex, Texture2D move_tex, int mapW, int mapH,float dmg,float hp,float spd);
     void tick(float);
     void setTarget(Character *chara) { target = chara; }
     virtual Vector2 getScreenPos() override;
