@@ -26,6 +26,7 @@ Enemy::Enemy(Texture2D idle_tex, Texture2D move_tex, int mapW, int mapH, float d
     maxHealth = health;
     enemyDmg = dmg;
     enemySpeed = spd;
+    wanderSpeed = enemySpeed / 2.f;
 }
 
 void Enemy::tick(float deltaTime)
@@ -62,7 +63,6 @@ void Enemy::tick(float deltaTime)
         }
     }
 
-    //DrawText(std::to_string(enemySpeed).c_str(), getScreenPos().x, 30.f + getScreenPos().y, 25, WHITE);
     if (mode == 1) // Mode wander
     {
         if (Vector2Length(Vector2Subtract(target->getScreenPos(), getScreenPos())) < ChaseRange) // if player is withing range, set to chase mode
@@ -109,7 +109,7 @@ void Enemy::tick(float deltaTime)
     if (Vector2Length(velocity) != 0) // moving
     {
         texture = move;
-        worldPos = Vector2Add(worldPos, Vector2Scale(Vector2Normalize(velocity), speed));
+        worldPos = Vector2Add(worldPos, Vector2Scale(Vector2Normalize(velocity), wanderSpeed));
 
         velocity.x < 0.f ? rightLeft = -1.f : rightLeft = 1.f;
     }

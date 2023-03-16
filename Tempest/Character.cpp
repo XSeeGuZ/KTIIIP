@@ -179,7 +179,7 @@ void Character::tick(float deltaTime)
     DrawRectangleRec(UltiBar, YELLOW);
     DrawRectangleLinesEx(UltiBarLine, 5.f, BLACK);
 
-    DrawText(std::to_string(Ulti / maxUlti).c_str(), 50, 200, 50, WHITE);
+    //DrawText(std::to_string(Ulti / maxUlti).c_str(), 50, 200, 50, WHITE);
     if (IsKeyDown(KEY_LEFT_CONTROL) && Ulti < maxUlti && useUlti == false)
     {
         charging = true;

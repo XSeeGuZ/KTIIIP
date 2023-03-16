@@ -33,5 +33,6 @@ private:
     float ChaseRange = 475.f;
     float OutofChaseRange = 575.f;
     float rad = 25.f;
+    float wanderSpeed;
     int OOR_count = 0;
 };

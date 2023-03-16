@@ -9,6 +9,8 @@
 		"**/*.exe": true,
 	},
 	"files.associations": {
-		"new": "cpp"
+		"new": "cpp",
+		"*.m": "cpp",
+		"string": "cpp"
 	}
 }

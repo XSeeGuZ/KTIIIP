@@ -83,7 +83,7 @@ int main()
             knights.clear();
             if (wave == 1)
             {
-                EnemyAmount = 8;
+                EnemyAmount = 1;
             }
             else if (wave == 2)
             {
@@ -132,7 +132,7 @@ int main()
             heal[i].Render(AiPalm.getWorldPos());
         }
 
-        DrawText(to_string(EnemyAmount).c_str(), 50, 200, 50, WHITE);
+        //DrawText(to_string(EnemyAmount).c_str(), 50, 200, 50, WHITE);
 
         AiPalm.tick(GetFrameTime()); // Render character
         for (auto enemy : enemies)
