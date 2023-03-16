@@ -28,7 +28,7 @@ void AddEnemy(vector<Enemy *> *ptr, Texture2D idle, Texture2D move, Texture2D ma
     if (type == "goblin")
     {
         ptr->push_back(new Enemy{idle,
-                                move,
+                                 move,
                                  map.width,
                                  map.height, 5.f, 5.f, RandomFloat(2.f, 2.4f)});
     }
@@ -345,25 +345,7 @@ int main()
                     delete &enemies[i];
                 }
             }*/
-            AiPalm.tick(GetFrameTime()); // Render character
 
-            if (!AiPalm.getAlive()) // Character is dead
-            {
-                DrawRectangle(0.f, 0.f, Windowwidth, Windowheight, RED);
-                DrawText("Game Over", Windowwidth * 0.1f, Windowheight * 0.4f, 200, WHITE);
-                EndDrawing();
-                continue;
-            }
-            else
-            {
-                std::string knightHealth{""};
-                knightHealth.append(std::to_string(AiPalm.getHealth()), 0, 5);
-                DrawText(knightHealth.c_str(), Windowwidth * 0.42f, Windowheight * 0.015f, 50, WHITE);
-                std::string maxHp{""};
-                maxHp.append("/");
-                maxHp.append(std::to_string(AiPalm.getMaxHp()), 0, 3);
-                DrawText(maxHp.c_str(), Windowwidth * 0.48f, Windowheight * 0.015f, 50, WHITE);
-            }
             if (EnemyAmount <= 0)
             {
                 Init = true;
