@@ -210,6 +210,7 @@ int main()
                     if (!CheckCollisionRecs(AiPalm.getCollisionRec(), e->getCollisionRec()))
                     {
                         AiPalm.setKB_V(e->getScreenPos());
+                        
                     }
                 }
             }
