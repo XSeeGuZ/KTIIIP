@@ -123,7 +123,6 @@ int main()
             }
         }
         
-
         for (auto prop : props)
         {
             prop.render(AiPalm.getWorldPos()); // Draw props
