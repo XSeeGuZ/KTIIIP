@@ -60,6 +60,11 @@ protected:
     bool temp_immune{false};
     float time_count{0.f};
     bool enemy_dmg_interval = false;
+    float Ulti{0.f};
+    float maxUlti{100.f};
+    float Ulticharge{};
+    bool charging = false;
+    bool useUlti = false;
 private:
     bool alive{true};
 };

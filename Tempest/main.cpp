@@ -60,25 +60,7 @@ int main()
     Heal *heal = new Heal[2];
     heal[0] = Heal{Vector2{300.f * mapScale, 200.f * mapScale}, LoadTexture("characters/weapon_sword_1.png"), 1};
     heal[1] = Heal{Vector2{400.f * mapScale, 200.f * mapScale}, LoadTexture("characters/weapon_sword_1.png"), 1};
-
-    /*vector<Enemy *> goblins{};
-    for (int i = 0; i < EnemyAmount; i++) // Initialize Enemy
-    {
-        AddEnemy(&goblins,
-                 LoadTexture("characters/goblin_idle_spritesheet.png"),
-                 LoadTexture("characters/goblin_run_spritesheet.png"),
-                 map);
-    }
-
-    vector<Enemy *> enemies[]{goblins};
-
-    for (auto enemy : enemies)
-    {
-        for (auto e : enemy)
-        {
-            e->setTarget(&AiPalm); // Set Target to Player
-        }
-    }*/
+    
     vector<Enemy *> goblins{};
     vector<Enemy *> knights{};
     vector<vector<Enemy *>> enemies{};
