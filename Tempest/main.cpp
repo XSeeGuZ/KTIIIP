@@ -89,7 +89,6 @@ int main()
             {
                 EnemyAmount = 12;
             }
-            
 
             for (int i = 0; i < EnemyAmount; i++) // Initialize Enemy
             {
