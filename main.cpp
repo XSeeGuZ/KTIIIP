@@ -27,7 +27,7 @@ void AddEnemy(vector<Enemy *> *ptr, Texture2D idle, Texture2D move, Texture2D ma
     if (type == "goblin")
     {
         ptr->push_back(new Enemy{idle,
-                                 move,
+                                move,
                                  map.width,
                                  map.height, 5.f, 5.f, RandomFloat(2.2f, 2.7f)});
     }
@@ -45,7 +45,7 @@ int main()
     srand(time(0));
     int wave = 0;
     int EnemyAmount = 10;
-    bool isEnemyDead[EnemyAmount]{false};
+    //bool isEnemyDead[EnemyAmount]{false};
     bool inStartMenu = true;
     InitWindow(Windowwidth, Windowheight, "Game");
     InitAudioDevice();
@@ -81,9 +81,14 @@ int main()
         props.push_back(Prop{Vector2{(rand() % 1300 + 400) * mapScale, (rand() % 1610 + 230) * mapScale}, LoadTexture("tiles/tree.png"), i});
     }
 
-    Heal *heal = new Heal[2];
-    heal[0] = Heal{Vector2{300.f * mapScale, 200.f * mapScale}, LoadTexture("characters/weapon_sword_1.png"), 1};
-    heal[1] = Heal{Vector2{400.f * mapScale, 200.f * mapScale}, LoadTexture("characters/weapon_sword_1.png"), 1};
+    Heal *heal = new Heal[7];
+    heal[0] = Heal{Vector2{(rand() % 1300 + 400) * mapScale, (rand() % 1610 + 230) * mapScale}, LoadTexture("HealthPotion/small.png"), 1};
+    heal[1] = Heal{Vector2{(rand() % 1300 + 400) * mapScale, (rand() % 1610 + 230) * mapScale}, LoadTexture("HealthPotion/small.png"), 1};
+    heal[2] = Heal{Vector2{(rand() % 1300 + 400) * mapScale, (rand() % 1610 + 230) * mapScale}, LoadTexture("HealthPotion/small.png"), 1};
+    heal[3] = Heal{Vector2{(rand() % 1300 + 400) * mapScale, (rand() % 1610 + 230) * mapScale}, LoadTexture("HealthPotion/small.png"), 1};
+    heal[4] = Heal{Vector2{(rand() % 1300 + 400) * mapScale, (rand() % 1610 + 230) * mapScale}, LoadTexture("HealthPotion/medium.png"), 2};
+    heal[5] = Heal{Vector2{(rand() % 1300 + 400) * mapScale, (rand() % 1610 + 230) * mapScale}, LoadTexture("HealthPotion/medium.png"), 2};
+    heal[6] = Heal{Vector2{(rand() % 1300 + 400) * mapScale, (rand() % 1610 + 230) * mapScale}, LoadTexture("HealthPotion/large.png"), 3};
 
     vector<Enemy *> goblins{};
     vector<Enemy *> knights{};
@@ -174,14 +179,13 @@ int main()
                 }
             }
 
-            AiPalm.tick(GetFrameTime()); // Render character
-
+            
             for (auto prop : props)
             {
                 prop.render(AiPalm.getWorldPosLF()); // Draw props
             }
 
-            for (unsigned int i = 0; i < 2; i++) // Draw heal
+            for (unsigned int i = 0; i < 7; i++) // Draw heal
             {
                 heal[i].Render(AiPalm.getWorldPosLF());
             }
@@ -196,7 +200,7 @@ int main()
                 }
             }
 
-            for (unsigned int i = 0; i < 2; i++)
+            for (unsigned int i = 0; i < 7; i++)
             {
                 if ((CheckCollisionRecs(heal[i].GetCollisionRec(AiPalm.getWorldPos()), AiPalm.getCollisionRec())) && (heal[i].getIsUsed() == false))
                 {
@@ -205,23 +209,7 @@ int main()
                 }
             }
 
-            if (!AiPalm.getAlive()) // Character is dead
-            {
-                DrawRectangle(0.f, 0.f, Windowwidth, Windowheight, RED);
-                DrawText("Game Over", Windowwidth * 0.1f, Windowheight * 0.4f, 200, WHITE);
-                EndDrawing();
-                continue;
-            }
-            else
-            {
-                std::string knightHealth{""};
-                knightHealth.append(std::to_string(AiPalm.getHealth()), 0, 5);
-                DrawText(knightHealth.c_str(), Windowwidth * 0.42f, Windowheight * 0.015f, 50, WHITE);
-                std::string maxHp{""};
-                maxHp.append("/");
-                maxHp.append(std::to_string(AiPalm.getMaxHp()), 0, 3);
-                DrawText(maxHp.c_str(), Windowwidth * 0.48f, Windowheight * 0.015f, 50, WHITE);
-            }
+            
 
             if (AiPalm.getWorldPos().x < 0 || AiPalm.getWorldPos().y < 0 || // check out of bounds for character
                 (AiPalm.getWorldPos().x + Windowwidth > map.width * mapScale) ||
@@ -298,7 +286,25 @@ int main()
                     delete &enemies[i];
                 }
             }*/
+            AiPalm.tick(GetFrameTime()); // Render character
 
+            if (!AiPalm.getAlive()) // Character is dead
+            {
+                DrawRectangle(0.f, 0.f, Windowwidth, Windowheight, RED);
+                DrawText("Game Over", Windowwidth * 0.1f, Windowheight * 0.4f, 200, WHITE);
+                EndDrawing();
+                continue;
+            }
+            else
+            {
+                std::string knightHealth{""};
+                knightHealth.append(std::to_string(AiPalm.getHealth()), 0, 5);
+                DrawText(knightHealth.c_str(), Windowwidth * 0.42f, Windowheight * 0.015f, 50, WHITE);
+                std::string maxHp{""};
+                maxHp.append("/");
+                maxHp.append(std::to_string(AiPalm.getMaxHp()), 0, 3);
+                DrawText(maxHp.c_str(), Windowwidth * 0.48f, Windowheight * 0.015f, 50, WHITE);
+            }
             if (EnemyAmount <= 0)
             {
                 Init = true;

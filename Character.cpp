@@ -104,7 +104,7 @@ void Character::tick(float deltaTime)
 
         Vector2 origin{}; // Set origin point of weapon
         Vector2 offset{}; // Set offset of weapon to Character
-        float rotation{};
+        //float rotation{};
         wp_width = weapon.width / max_atk_frames;
         if (rightLeft > 0.f)
         {
@@ -132,7 +132,7 @@ void Character::tick(float deltaTime)
                 weapon.height * scale};*/
             // rotation = IsMouseButtonPressed(MOUSE_LEFT_BUTTON) ? -35.f : 0.f;
         }
-        DrawRectangleLines(getCollisionRec().x, getCollisionRec().y, getCollisionRec().width, getCollisionRec().height, BLUE);
+        //DrawRectangleLines(getCollisionRec().x, getCollisionRec().y, getCollisionRec().width, getCollisionRec().height, BLUE);
         // Draw Sword when attacking
         if ((IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || Attacking == true) && Dashed == false && atk_interval <= 0 && charging == false)
         {
@@ -163,8 +163,8 @@ void Character::tick(float deltaTime)
                     w_dest = {getScreenPos().x + (wp_width * scale), getScreenPos().y, wp_width * scale, weapon.height * scale};
 
                 DrawTexturePro(weapon, w_source, w_dest, origin, rightLeft, WHITE);
-                DrawRectangleLines(weaponCollisionRec.x, weaponCollisionRec.y, weaponCollisionRec.width, weaponCollisionRec.height, RED); // Hitbox of weapon
-                DrawRectangleLines(getCollisionRec().x, getCollisionRec().y, getCollisionRec().width, getCollisionRec().height, BLUE);
+                //DrawRectangleLines(weaponCollisionRec.x, weaponCollisionRec.y, weaponCollisionRec.width, weaponCollisionRec.height, RED); // Hitbox of weapon
+                //DrawRectangleLines(getCollisionRec().x, getCollisionRec().y, getCollisionRec().width, getCollisionRec().height, BLUE);
             }
             else
             {
