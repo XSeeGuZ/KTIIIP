@@ -24,6 +24,7 @@ protected:
     Texture2D move = LoadTexture("characters/chara_run.png");  // Load Character moving
     Texture2D attack = LoadTexture("characters/chara_atk.png");
     Texture2D dash = LoadTexture("characters/chara_dash.png");
+    Texture2D charge = LoadTexture("characters/chara_charge.png");
     Texture2D lose = LoadTexture("characters/chara_lose.png");
     Vector2 worldPos{};
     Vector2 worldPosLastframe{};
@@ -36,6 +37,7 @@ protected:
     float runningTime = 0;         // current time
     int frame = 0;                 // current character frame
     int atk_frame = 0;
+    int aura_frame = 0;
     float updateTime = 1.f / 12.f; // time in secs to next frame          
     int Dash_Ani_holder = 0;
     bool Dashed = false;

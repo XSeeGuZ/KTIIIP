@@ -5,7 +5,7 @@ class Heal{
 private:
     Texture2D texture{};
     Vector2 worldPos{};
-    float scale{4.0f};
+    float scale{0.5f};
     int size{};
     bool isUsed{false};
 public:

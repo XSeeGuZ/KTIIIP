@@ -15,12 +15,16 @@ Character::Character(int winWidth, int winHeight, int mapW, int mapH) : windowWi
     isEnemy = false;
     maxHealth = health;
     speed = 5.f;
+    aura_width = charge_aura.width / max_frames;
+    ulti_aura_width = ulti_aura.width / 3.f;
     Aura = LoadSound("sounds/aura.mp3");
     Ulti_sound = LoadSound("sounds/ultimate_use.mp3");
     Dash_sound = LoadSound("sounds/dash.mp3");
+    Ulti_aura_sound = LoadSound("sounds/ultimate_aura.mp3");
     SetSoundVolume(Aura, 0.05f);
-    SetSoundVolume(Ulti_sound, 0.4f);
+    SetSoundVolume(Ulti_sound, 0.7f);
     SetSoundVolume(Dash_sound, 0.1f);
+    SetSoundVolume(Ulti_aura_sound, 0.2f);
 }
 
 Vector2 Character::getScreenPos()
@@ -49,7 +53,7 @@ void Character::tick(float deltaTime)
 
         if (Dash_Ani_holder >= 10)
         {
-            //StopSound(Dash_sound);
+            // StopSound(Dash_sound);
             Dashed = false;
             Dash_Ani_holder = 0;
             Dash_dir = {0.f, 0.f};
@@ -68,7 +72,7 @@ void Character::tick(float deltaTime)
                 velocity.y += speed;
         }
 
-        //DrawText(std::to_string(damage).c_str(), getScreenPos().x, getScreenPos().y + 100, 25, WHITE);
+        // DrawText(std::to_string(damage).c_str(), getScreenPos().x, getScreenPos().y + 100, 25, WHITE);
 
         if (Vector2Length(Vector2Scale(Vector2Normalize(velocity), speed)) != 0)
         {
@@ -104,7 +108,7 @@ void Character::tick(float deltaTime)
 
         Vector2 origin{}; // Set origin point of weapon
         Vector2 offset{}; // Set offset of weapon to Character
-        float rotation{};
+        //float rotation{};
         wp_width = weapon.width / max_atk_frames;
         if (rightLeft > 0.f)
         {
@@ -132,7 +136,7 @@ void Character::tick(float deltaTime)
                 weapon.height * scale};*/
             // rotation = IsMouseButtonPressed(MOUSE_LEFT_BUTTON) ? -35.f : 0.f;
         }
-        DrawRectangleLines(getCollisionRec().x, getCollisionRec().y, getCollisionRec().width, getCollisionRec().height, BLUE);
+        //DrawRectangleLines(getCollisionRec().x, getCollisionRec().y, getCollisionRec().width, getCollisionRec().height, BLUE);
         // Draw Sword when attacking
         if ((IsMouseButtonPressed(MOUSE_BUTTON_LEFT) || Attacking == true) && Dashed == false && atk_interval <= 0 && charging == false)
         {
@@ -163,8 +167,8 @@ void Character::tick(float deltaTime)
                     w_dest = {getScreenPos().x + (wp_width * scale), getScreenPos().y, wp_width * scale, weapon.height * scale};
 
                 DrawTexturePro(weapon, w_source, w_dest, origin, rightLeft, WHITE);
-                DrawRectangleLines(weaponCollisionRec.x, weaponCollisionRec.y, weaponCollisionRec.width, weaponCollisionRec.height, RED); // Hitbox of weapon
-                DrawRectangleLines(getCollisionRec().x, getCollisionRec().y, getCollisionRec().width, getCollisionRec().height, BLUE);
+                //DrawRectangleLines(weaponCollisionRec.x, weaponCollisionRec.y, weaponCollisionRec.width, weaponCollisionRec.height, RED); // Hitbox of weapon
+                //DrawRectangleLines(getCollisionRec().x, getCollisionRec().y, getCollisionRec().width, getCollisionRec().height, BLUE);
             }
             else
             {
@@ -179,10 +183,6 @@ void Character::tick(float deltaTime)
         if (atk_interval > 0)
             atk_interval--;
     }
-    Rectangle healthBarLine{0.f, 0.f, static_cast<float>(windowWidth), windowHeight * 0.09f};
-    Rectangle healthBar{0.f, 0.f, health / maxHealth * windowWidth, windowHeight * 0.09f};
-    DrawRectangleRec(healthBar, RED);
-    DrawRectangleLinesEx(healthBarLine, 5.f, BLACK);
 
     // UltimateBar
     Rectangle UltiBarLine{getScreenPos().x - (width / 2) * scale, getScreenPos().y - 20.f, width * scale * 2, 20};
@@ -193,15 +193,27 @@ void Character::tick(float deltaTime)
     // DrawText(std::to_string(Ulti / maxUlti).c_str(), 50, 200, 50, WHITE);
     if (IsKeyDown(KEY_LEFT_CONTROL) && Ulti < maxUlti && useUlti == false)
     {
+        texture = charge;
         if (charging == false)
+        {
             PlaySound(Aura);
+            aura_frame = 0;
+        }
         charging = true;
         Ulticharge += deltaTime;
         if (Ulticharge > 1.f / 20.f)
         {
             Ulti++;
             Ulticharge = 0;
+            aura_frame++;
+            if (aura_frame > max_frames)
+            {
+                aura_frame = 0;
+            }
         }
+        Rectangle source{aura_frame * aura_width, 0.f, aura_width, static_cast<float>(charge_aura.height)};
+        Rectangle dest{getScreenPos().x - (aura_width / 2.f) - 5.f, getScreenPos().y + 20, scale * aura_width, scale * static_cast<float>(charge_aura.height)};
+        DrawTexturePro(charge_aura, source, dest, Vector2{}, 0.f, WHITE);
     }
     else
     {
@@ -210,13 +222,15 @@ void Character::tick(float deltaTime)
     }
     if (Ulti == maxUlti && useUlti == false)
     {
+        aura_frame = 0;
+        PlaySound(Ulti_aura_sound);
         PlaySound(Ulti_sound);
         time_count = 0;
         Ulticharge = 0;
         useUlti = true;
         speed += 5;
         damage += 10;
-        Dash_speed += 2;
+        Dash_speed += 1;
         atk_duration -= 2;
         atk_interval_max -= 3;
     }
@@ -224,8 +238,9 @@ void Character::tick(float deltaTime)
     {
         Ulticharge += deltaTime;
         time_count += deltaTime;
-        if (Ulticharge > 1.f / 20.f)
+        if (Ulticharge > 5.f/100.f)
         {
+            aura_frame++;
             Ulti--;
             Ulticharge = 0;
         }
@@ -241,17 +256,25 @@ void Character::tick(float deltaTime)
                 health += 2;
             }
         }
+        if (aura_frame > 3)
+        {
+            aura_frame = 0;
+        }
         if (Ulti <= 0)
         {
             StopSound(Ulti_sound);
+            StopSound(Ulti_aura_sound);
             useUlti = false;
             Ulti = 0;
             speed -= 5;
             damage -= 10;
-            Dash_speed -= 2;
+            Dash_speed -= 1;
             atk_duration += 2;
             atk_interval_max += 3;
         }
+        Rectangle source{aura_frame * ulti_aura_width, 0.f, ulti_aura_width, static_cast<float>(ulti_aura.height)};
+        Rectangle dest{getScreenPos().x - (ulti_aura_width / 2.f), getScreenPos().y - 75.f, scale * ulti_aura_width, scale * static_cast<float>(ulti_aura.height)};
+        DrawTexturePro(ulti_aura, source, dest, Vector2{}, 0.f, WHITE);
     }
 }
 
@@ -278,8 +301,8 @@ void Character::setKB_V(Vector2 enemyScreenPos)
 void Character::heal(int size)
 {
     float s{0.2f * maxHealth};
-    float m{0.5f * maxHealth};
-    float l{0.8f * maxHealth};
+    float m{0.4f * maxHealth};
+    float l{0.6f * maxHealth};
     switch (size)
     {
     case 1:
@@ -308,4 +331,12 @@ void Character::heal(int size)
         health += 0;
         break;
     }
+}
+
+void Character::DrawHB()
+{
+    Rectangle healthBarLine{0.f, 0.f, static_cast<float>(windowWidth), windowHeight * 0.09f};
+    Rectangle healthBar{0.f, 0.f, health / maxHealth * windowWidth, windowHeight * 0.09f};
+    DrawRectangleRec(healthBar, RED);
+    DrawRectangleLinesEx(healthBarLine, 5.f, BLACK);
 }

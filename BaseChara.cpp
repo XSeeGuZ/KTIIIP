@@ -44,27 +44,21 @@ void BaseChara::tick(float deltaTime)
 
     if (!isEnemy)
     {
-        if (texture.id != dash.id)
+        if (texture.id == dash.id)
         {
-            if (texture.id != attack.id)
-            {
-                width = texture.width / max_frames; // normal sprite
-            }
-            else
-            {
-                width = texture.width / max_atk_frames; // attack sprite
-            }
+            width = texture.width;
         }
-        else
+        if (texture.id == attack.id)
         {
-            if (texture.id == dash.id)
-            {
-                width = texture.width; // dash sprite
-            }
-            else
-            {
-                width = texture.width / max_atk_frames; // attack sprite
-            }
+            width = texture.width / max_atk_frames;
+        }
+        if (texture.id == charge.id)
+        {
+            width = texture.width;
+        }
+        if (texture.id != charge.id && texture.id != dash.id && texture.id != attack.id)
+        {
+            width = texture.width / max_frames;
         }
     }
     else

@@ -20,7 +20,7 @@ Character::Character(int winWidth, int winHeight, int mapW, int mapH) : windowWi
     Dash_sound = LoadSound("sounds/dash.mp3");
     SetSoundVolume(Aura, 0.05f);
     SetSoundVolume(Ulti_sound, 0.4f);
-    SetSoundVolume(Dash_sound, 0.1f);
+    SetSoundVolume(Dash_sound, 0.2f);
 }
 
 Vector2 Character::getScreenPos()

@@ -23,16 +23,22 @@ public:
     void setEnemyAmount(int t) { enemyAmount = t; }
     bool get_eDmg_int() { return enemy_dmg_interval; }
     void set_eDmg_int(bool d) { enemy_dmg_interval = d; }
+    void DrawHB();
     
 private:
     int windowWidth;
     int windowHeight;
     Texture2D weapon{LoadTexture("characters/chara_weapon.png")};
+    Texture2D charge_aura{LoadTexture("characters/aura_charging.png")};
+    Texture2D ulti_aura{LoadTexture("characters/aura_ulti.png")};
     Rectangle weaponCollisionRec{};
     int health{100};
     int enemyAmount{};
+    float aura_width{};
+    float ulti_aura_width{};
     Sound Aura;
     Sound Ulti_sound;
     Sound Dash_sound;
+    Sound Ulti_aura_sound;
 };
 #endif
