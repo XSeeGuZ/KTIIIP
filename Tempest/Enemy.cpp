@@ -26,7 +26,7 @@ Enemy::Enemy(Texture2D idle_tex, Texture2D move_tex, int mapW, int mapH, float d
     maxHealth = health;
     enemyDmg = dmg;
     enemySpeed = spd;
-    wanderSpeed = enemySpeed / 2.f;
+    wanderSpeed = enemySpeed * 0.7f;
 }
 
 void Enemy::tick(float deltaTime)
@@ -96,7 +96,7 @@ void Enemy::tick(float deltaTime)
 
             if (randWanderCounter <= randWander)
             {
-                velocity = Vector2Scale(wander, enemySpeed);
+                velocity = wander;
                 randWanderCounter++;
             }
             else
@@ -106,10 +106,13 @@ void Enemy::tick(float deltaTime)
             wander_interval--;
     }
 
+    // DrawText(std::to_string(enemySpeed).c_str(), getScreenPos().x, getScreenPos().y + 25, 25, WHITE);
+
     if (Vector2Length(velocity) != 0) // moving
     {
         texture = move;
-        worldPos = Vector2Add(worldPos, Vector2Scale(Vector2Normalize(velocity), wanderSpeed));
+
+        worldPos = mode == 1 ? Vector2Add(worldPos, Vector2Scale(Vector2Normalize(velocity), wanderSpeed)) : Vector2Add(worldPos, Vector2Scale(Vector2Normalize(velocity), enemySpeed));
 
         velocity.x < 0.f ? rightLeft = -1.f : rightLeft = 1.f;
     }
@@ -151,7 +154,7 @@ void Enemy::takeDmg(Vector2 kbDirection, float kbMagnitude)
     {
         time_count = 0.f;
         target->set_eDmg_int(true);
-        health -= damage;
+        health -= target->getDmg();
         // Apply knockback
         Vector2 kbVector = Vector2Normalize(kbDirection);
         kbVector = Vector2Scale(kbVector, kbMagnitude);

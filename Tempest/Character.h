@@ -13,7 +13,7 @@ public:
     Rectangle getweaponColRec() { return weaponCollisionRec; }
     bool checkDash() { return Dashed; }
     int getHealth() const { return health; }
-    int getDmg() { return dmg; }
+    int getDmg() { return damage; }
     void takeDmg(int dmg, Vector2 kbDirection, float kbMagnitude);
     Vector2 getKB_V() { return KB_V; }
     float getKB() { return KB; }
@@ -30,7 +30,6 @@ private:
     Texture2D weapon{LoadTexture("characters/chara_weapon.png")};
     Rectangle weaponCollisionRec{};
     int health{100};
-    int dmg{5};
     int enemyAmount{};
 };
 #endif

@@ -29,14 +29,14 @@ void AddEnemy(vector<Enemy *> *ptr, Texture2D idle, Texture2D move, Texture2D ma
         ptr->push_back(new Enemy{idle,
                                  move,
                                  map.width,
-                                 map.height, 5.f,5.f, RandomFloat(4.8f, 5.2f)});
+                                 map.height, 5.f,5.f, RandomFloat(2.2f, 2.7f)});
     }
     else if (type == "knight")
     {
         ptr->push_back(new Enemy{idle,
                                  move,
                                  map.width,
-                                 map.height, RandomFloat(8.f, 10.f), 11.f, RandomFloat(5.2f, 5.95f)});
+                                 map.height, RandomFloat(8.f, 10.f), 11.f, RandomFloat(2.6f, 3.1f)});
     }
 }
 
@@ -48,7 +48,7 @@ int main()
     bool isEnemyDead[EnemyAmount]{false};
     InitWindow(Windowwidth, Windowheight, "Game");
 
-    Texture2D map = LoadTexture("tiles/map.png"); // Load Map
+    Texture2D map = LoadTexture("tiles/finalmap.png"); // Load Map
     Vector2 mapPos{0.0, 0.0};                     // Load Map Coords
     const float mapScale = 2.f;
 
@@ -83,7 +83,7 @@ int main()
             knights.clear();
             if (wave == 1)
             {
-                EnemyAmount = 1;
+                EnemyAmount = 8;
             }
             else if (wave == 2)
             {
@@ -132,7 +132,7 @@ int main()
             heal[i].Render(AiPalm.getWorldPos());
         }
 
-        //DrawText(to_string(EnemyAmount).c_str(), 50, 200, 50, WHITE);
+        DrawText(to_string(EnemyAmount).c_str(), 50, 200, 50, WHITE);
 
         AiPalm.tick(GetFrameTime()); // Render character
         for (auto enemy : enemies)

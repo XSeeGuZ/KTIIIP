@@ -60,6 +60,9 @@ void Character::tick(float deltaTime)
             if (IsKeyDown(KEY_S))
                 velocity.y += speed;
         }
+
+        //DrawText(std::to_string(damage).c_str(), getScreenPos().x, getScreenPos().y + 100, 25, WHITE);
+
         if (Vector2Length(Vector2Scale(Vector2Normalize(velocity), speed)) != 0)
         {
 
@@ -179,7 +182,7 @@ void Character::tick(float deltaTime)
     DrawRectangleRec(UltiBar, YELLOW);
     DrawRectangleLinesEx(UltiBarLine, 5.f, BLACK);
 
-    //DrawText(std::to_string(Ulti / maxUlti).c_str(), 50, 200, 50, WHITE);
+    // DrawText(std::to_string(Ulti / maxUlti).c_str(), 50, 200, 50, WHITE);
     if (IsKeyDown(KEY_LEFT_CONTROL) && Ulti < maxUlti && useUlti == false)
     {
         charging = true;
@@ -196,21 +199,35 @@ void Character::tick(float deltaTime)
     }
     if (Ulti == maxUlti && useUlti == false)
     {
+        time_count = 0;
         Ulticharge = 0;
         useUlti = true;
         speed += 5;
         damage += 10;
         Dash_speed += 2;
-        atk_duration-=2;
+        atk_duration -= 2;
         atk_interval_max -= 3;
     }
     if (useUlti == true)
     {
         Ulticharge += deltaTime;
+        time_count += deltaTime;
         if (Ulticharge > 1.f / 20.f)
         {
             Ulti--;
             Ulticharge = 0;
+        }
+        if (time_count > 1.f)
+        {
+            time_count = 0;
+            if ((maxHealth - health) <= 2)
+            {
+                health = maxHealth;
+            }
+            else
+            {
+                health += 2;
+            }
         }
         if (Ulti <= 0)
         {
@@ -219,7 +236,7 @@ void Character::tick(float deltaTime)
             speed -= 5;
             damage -= 10;
             Dash_speed -= 2;
-            atk_duration+=2;
+            atk_duration += 2;
             atk_interval_max += 3;
         }
     }
