@@ -13,8 +13,8 @@ Character::Character(int winWidth, int winHeight, int mapW, int mapH) : windowWi
     // worldPos = {static_cast<float>(GetRandomValue(10 * scale, mapWidth - 100)), static_cast<float>(GetRandomValue(6 * scale, mapHeight - 60))};
     worldPos = {800.f, 800.f};
     isEnemy = false;
-    maxHealth=health;
-
+    maxHealth = health;
+    speed = 5.f;
 }
 
 Vector2 Character::getScreenPos()
@@ -155,6 +155,10 @@ void Character::tick(float deltaTime)
                 DrawRectangleLines(weaponCollisionRec.x, weaponCollisionRec.y, weaponCollisionRec.width, weaponCollisionRec.height, RED); // Hitbox of weapon
                 DrawRectangleLines(getCollisionRec().x, getCollisionRec().y, getCollisionRec().width, getCollisionRec().height, BLUE);
             }
+            else
+            {
+                enemy_dmg_interval = false;
+            }
         }
 
         if (Dashed == true)
@@ -164,63 +168,61 @@ void Character::tick(float deltaTime)
         if (atk_interval > 0)
             atk_interval--;
     }
-    Rectangle healthBarLine{0.f, 0.f,static_cast<float>(windowWidth),windowHeight*0.09f};
-    Rectangle healthBar{0.f, 0.f,health/maxHealth*windowWidth,windowHeight*0.09f};
-    DrawRectangleRec(healthBar,RED);
-    DrawRectangleLinesEx(healthBarLine,5.f,BLACK);
+    Rectangle healthBarLine{0.f, 0.f, static_cast<float>(windowWidth), windowHeight * 0.09f};
+    Rectangle healthBar{0.f, 0.f, health / maxHealth * windowWidth, windowHeight * 0.09f};
+    DrawRectangleRec(healthBar, RED);
+    DrawRectangleLinesEx(healthBarLine, 5.f, BLACK);
 
-    //UltimateBar
-    Rectangle UltiBarLine{getScreenPos().x-(width/2)*scale, getScreenPos().y-20.f, width*scale*2, 20};
-    Rectangle UltiBar{getScreenPos().x-(width/2)*scale, getScreenPos().y-20.f, (Ulti/maxUlti)*width*scale*2, 20};
-    DrawRectangleRec(UltiBar,YELLOW);
-    DrawRectangleLinesEx(UltiBarLine,5.f,BLACK);
+    // UltimateBar
+    Rectangle UltiBarLine{getScreenPos().x - (width / 2) * scale, getScreenPos().y - 20.f, width * scale * 2, 20};
+    Rectangle UltiBar{getScreenPos().x - (width / 2) * scale, getScreenPos().y - 20.f, (Ulti / maxUlti) * width * scale * 2, 20};
+    DrawRectangleRec(UltiBar, YELLOW);
+    DrawRectangleLinesEx(UltiBarLine, 5.f, BLACK);
 
-    DrawText(std::to_string(Ulti/maxUlti).c_str(),50,200,50,WHITE);
-    if (IsKeyDown(KEY_LEFT_CONTROL) && Ulti<maxUlti && useUlti == false)
+    DrawText(std::to_string(Ulti / maxUlti).c_str(), 50, 200, 50, WHITE);
+    if (IsKeyDown(KEY_LEFT_CONTROL) && Ulti < maxUlti && useUlti == false)
     {
         charging = true;
-        Ulticharge += deltaTime; 
-        if (Ulticharge > 1.f/20.f )
+        Ulticharge += deltaTime;
+        if (Ulticharge > 1.f / 20.f)
         {
             Ulti++;
-            Ulticharge=0;
+            Ulticharge = 0;
         }
     }
     else
     {
         charging = false;
     }
-    if (Ulti==maxUlti && useUlti == false)
+    if (Ulti == maxUlti && useUlti == false)
     {
-        Ulticharge=0;
-        useUlti=true;
-        speed+=5;
-        damage+=10;
-        Dash_speed+=2;
-        //atk_duration-=2;
-        //atk_interval_max -= 3;
+        Ulticharge = 0;
+        useUlti = true;
+        speed += 5;
+        damage += 10;
+        Dash_speed += 2;
+        atk_duration-=2;
+        atk_interval_max -= 3;
     }
-    if (useUlti==true)
+    if (useUlti == true)
     {
-        Ulticharge+=deltaTime;
-        if (Ulticharge > 1.f/20.f)
+        Ulticharge += deltaTime;
+        if (Ulticharge > 1.f / 20.f)
         {
             Ulti--;
-            Ulticharge=0;
+            Ulticharge = 0;
         }
-        if (Ulti<=0)
+        if (Ulti <= 0)
         {
             useUlti = false;
-            Ulti=0;
-            speed-=5;
-            damage-=10;
-            Dash_speed-=2;
-            //atk_duration+=2;
-            //atk_interval_max += 3;
+            Ulti = 0;
+            speed -= 5;
+            damage -= 10;
+            Dash_speed -= 2;
+            atk_duration+=2;
+            atk_interval_max += 3;
         }
-        
     }
-    
 }
 
 void Character::takeDmg(int dmg, Vector2 kbDirection, float kbMagnitude)
@@ -243,39 +245,37 @@ void Character::setKB_V(Vector2 enemyScreenPos)
     KB_V = Vector2Scale(Vector2Normalize(Vector2Subtract(enemyScreenPos, getScreenPos())), 100.f);
 }
 
-
-void Character::heal(int size){
-    float s{0.2f*maxHealth};
-    float m{0.5f*maxHealth};
-    float l{0.8f*maxHealth};
+void Character::heal(int size)
+{
+    float s{0.2f * maxHealth};
+    float m{0.5f * maxHealth};
+    float l{0.8f * maxHealth};
     switch (size)
     {
     case 1:
-        if((health+s)>=maxHealth){ 
-            health=maxHealth;
-            }
-        else{
-            health+=s;
+        if ((health + s) >= maxHealth)
+        {
+            health = maxHealth;
+        }
+        else
+        {
+            health += s;
         }
         break;
     case 2:
-        if((health+m)>=maxHealth)
-            health=maxHealth;
+        if ((health + m) >= maxHealth)
+            health = maxHealth;
         else
-            health+=m;
+            health += m;
         break;
     case 3:
-        if((health+l)>=maxHealth)
-            health=maxHealth;
+        if ((health + l) >= maxHealth)
+            health = maxHealth;
         else
-            health+=l;
+            health += l;
         break;
     default:
-            health+=0;
+        health += 0;
         break;
     }
 }
-
-
-
-

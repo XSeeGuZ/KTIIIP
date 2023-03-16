@@ -63,6 +63,8 @@ protected:
     float Ulti{0.f};
     float maxUlti{100.f};
     float Ulticharge{};
+    float damage{5};
+    float Dash_speed{5.f};
     bool charging = false;
     bool useUlti = false;
 private:

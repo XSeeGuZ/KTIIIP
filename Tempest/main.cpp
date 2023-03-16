@@ -60,7 +60,7 @@ int main()
     Heal *heal = new Heal[2];
     heal[0] = Heal{Vector2{300.f * mapScale, 200.f * mapScale}, LoadTexture("characters/weapon_sword_1.png"), 1};
     heal[1] = Heal{Vector2{400.f * mapScale, 200.f * mapScale}, LoadTexture("characters/weapon_sword_1.png"), 1};
-    
+
     vector<Enemy *> goblins{};
     vector<Enemy *> knights{};
     vector<vector<Enemy *>> enemies{};
@@ -228,7 +228,7 @@ int main()
                 {
                     if (CheckCollisionRecs(AiPalm.getweaponColRec(), e->getCollisionRec()))
                     {
-                        e->takeDmg(AiPalm.getDmg(), AiPalm.getKB_V(), AiPalm.getKB());
+                        e->takeDmg(AiPalm.getKB_V(), AiPalm.getKB());
                         if (e->getAlive() == false && e->getErase() == false)
                         {
                             e->setErase(true);

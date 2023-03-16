@@ -62,7 +62,7 @@ void Enemy::tick(float deltaTime)
         }
     }
 
-    DrawText(std::to_string(enemySpeed).c_str(), getScreenPos().x, 30.f + getScreenPos().y, 25, WHITE);
+    //DrawText(std::to_string(enemySpeed).c_str(), getScreenPos().x, 30.f + getScreenPos().y, 25, WHITE);
     if (mode == 1) // Mode wander
     {
         if (Vector2Length(Vector2Subtract(target->getScreenPos(), getScreenPos())) < ChaseRange) // if player is withing range, set to chase mode
@@ -145,13 +145,13 @@ Vector2 Enemy::getScreenPos()
     return Vector2Subtract(worldPos, target->getWorldPos());
 }
 
-void Enemy::takeDmg(int dmg, Vector2 kbDirection, float kbMagnitude)
+void Enemy::takeDmg(Vector2 kbDirection, float kbMagnitude)
 {
     if (target->get_eDmg_int() == false)
     {
         time_count = 0.f;
         target->set_eDmg_int(true);
-        health -= dmg;
+        health -= damage;
         // Apply knockback
         Vector2 kbVector = Vector2Normalize(kbDirection);
         kbVector = Vector2Scale(kbVector, kbMagnitude);

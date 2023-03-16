@@ -12,7 +12,7 @@ public:
     void setTarget(Character *chara) { target = chara; }
     virtual Vector2 getScreenPos() override;
     int getHealth() { return health; }
-    void takeDmg(int dmg, Vector2 kbVector, float kbMagnitude);
+    void takeDmg(Vector2 kbVector, float kbMagnitude);
     bool getErase() { return erased;}
     void setErase(bool er) { erased = er; }
 
