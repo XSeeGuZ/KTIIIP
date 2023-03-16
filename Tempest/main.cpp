@@ -29,7 +29,7 @@ void AddEnemy(vector<Enemy *> *ptr, Texture2D idle, Texture2D move, Texture2D ma
         ptr->push_back(new Enemy{idle,
                                  move,
                                  map.width,
-                                 map.height, 5.f,5.f, RandomFloat(2.2f, 2.7f)});
+                                 map.height, 5.f, 5.f, RandomFloat(2.2f, 2.7f)});
     }
     else if (type == "knight")
     {
@@ -46,11 +46,21 @@ int main()
     int wave = 0;
     int EnemyAmount = 10;
     bool isEnemyDead[EnemyAmount]{false};
+    bool inStartMenu = true;
     InitWindow(Windowwidth, Windowheight, "Game");
+    InitAudioDevice();
+
+    Sound BGM = LoadSound("sounds/BGM.mp3");         // Background Music
+    Sound Walk = LoadSound("walk.mp3");        // Code that i will merge
+    Sound Sword = LoadSound("sounds/swordsound.mp3"); // Code that i will merge
+
+    SetSoundVolume(Sword, 0.5f);
 
     Texture2D map = LoadTexture("tiles/finalmap.png"); // Load Map
-    Vector2 mapPos{0.0, 0.0};                     // Load Map Coords
+    Vector2 mapPos{0.0, 0.0};                          // Load Map Coords
     const float mapScale = 2.f;
+    Texture2D startMenuLogo = LoadTexture("tiles/1.png");
+    Texture2D startButton = LoadTexture("tiles/2.png");
 
     Character AiPalm{Windowwidth, Windowheight, map.width, map.height};
 
@@ -71,128 +81,135 @@ int main()
         BeginDrawing();
         ClearBackground(WHITE);
 
-        mapPos = Vector2Scale(AiPalm.getWorldPos(), -1.f);
-
-        DrawTextureEx(map, mapPos, 0.0, mapScale, WHITE); // Draw map
-
-        if (Init == true) // Initialize wave
+        if (inStartMenu) // Code that i will merge
         {
-            Init = false;
-            wave++;
-            goblins.clear();
-            knights.clear();
-            if (wave == 1)
+            DrawTextureEx(map, Vector2{-750, -500}, 0.0, 2.0, WHITE);
+            DrawTexture(startMenuLogo, Windowwidth / 2 - startMenuLogo.width / 2, 100, WHITE);
+            DrawTexture(startButton, Windowwidth / 2 - startButton.width / 2, 300, WHITE);
+            Vector2 mousePos = GetMousePosition();
+            Rectangle startButtonRec = {Windowwidth / 2 - startButton.width / 2, 300, startButton.width, startButton.height};
+            if (CheckCollisionPointRec(mousePos, startButtonRec))
             {
-                EnemyAmount = 8;
+                DrawTexture(startButton, Windowwidth / 2 - startButton.width / 2, 300, RED);
             }
-            else if (wave == 2)
+            if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON) && CheckCollisionPointRec(mousePos, startButtonRec))
             {
-                EnemyAmount = 12;
+                inStartMenu = false;
+            }
+        } //----
+        else
+        {
+            mapPos = Vector2Scale(AiPalm.getWorldPos(), -1.f);
+
+            DrawTextureEx(map, mapPos, 0.0, mapScale, WHITE); // Draw map
+
+            if ((IsSoundPlaying(BGM) == false) && inStartMenu == false)
+            {
+                SetSoundVolume(BGM, 0.035f);
+                PlaySound(BGM);
             }
 
-            for (int i = 0; i < EnemyAmount; i++) // Initialize Enemy
+            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT) && AiPalm.getAttacking() == false)
+                PlaySound(Sword);
+
+            if (Init == true) // Initialize wave
             {
+                Init = false;
+                wave++;
+                goblins.clear();
+                knights.clear();
                 if (wave == 1)
                 {
-                    AddEnemy(&goblins, // Add goblin
-                             LoadTexture("characters/goblin_idle_spritesheet.png"),
-                             LoadTexture("characters/goblin_run_spritesheet.png"),
-                             map,
-                             "goblin");
+                    EnemyAmount = 8;
                 }
                 else if (wave == 2)
                 {
-                    AddEnemy(&knights, // Add goblin
-                             LoadTexture("characters/knight_idle_spritesheet.png"),
-                             LoadTexture("characters/knight_run_spritesheet.png"),
-                             map,
-                             "knight");
+                    EnemyAmount = 12;
+                }
+
+                for (int i = 0; i < EnemyAmount; i++) // Initialize Enemy
+                {
+                    if (wave == 1)
+                    {
+                        AddEnemy(&goblins, // Add goblin
+                                 LoadTexture("characters/goblin_idle_spritesheet.png"),
+                                 LoadTexture("characters/goblin_run_spritesheet.png"),
+                                 map,
+                                 "goblin");
+                    }
+                    else if (wave == 2)
+                    {
+                        AddEnemy(&knights, // Add goblin
+                                 LoadTexture("characters/knight_idle_spritesheet.png"),
+                                 LoadTexture("characters/knight_run_spritesheet.png"),
+                                 map,
+                                 "knight");
+                    }
+                }
+                if (wave == 1)
+                    enemies.push_back(goblins);
+                else if (wave == 2)
+                    enemies.push_back(knights);
+
+                for (auto enemy : enemies)
+                {
+                    for (auto e : enemy)
+                    {
+                        e->setTarget(&AiPalm); // Set Target to Player
+                    }
                 }
             }
-            if (wave == 1)
-                enemies.push_back(goblins);
-            else if (wave == 2)
-                enemies.push_back(knights);
 
+            for (auto prop : props)
+            {
+                prop.render(AiPalm.getWorldPos()); // Draw props
+            }
+            for (unsigned int i = 0; i < 2; i++)
+            {
+                heal[i].Render(AiPalm.getWorldPos());
+            }
+
+            DrawText(to_string(EnemyAmount).c_str(), 50, 200, 50, WHITE);
+
+            AiPalm.tick(GetFrameTime()); // Render character
             for (auto enemy : enemies)
             {
                 for (auto e : enemy)
                 {
-                    e->setTarget(&AiPalm); // Set Target to Player
+                    e->tick(GetFrameTime());
                 }
             }
-        }
-        
-        for (auto prop : props)
-        {
-            prop.render(AiPalm.getWorldPos()); // Draw props
-        }
-        for (unsigned int i = 0; i < 2; i++)
-        {
-            heal[i].Render(AiPalm.getWorldPos());
-        }
 
-        DrawText(to_string(EnemyAmount).c_str(), 50, 200, 50, WHITE);
-
-        AiPalm.tick(GetFrameTime()); // Render character
-        for (auto enemy : enemies)
-        {
-            for (auto e : enemy)
+            for (unsigned int i = 0; i < 2; i++)
             {
-                e->tick(GetFrameTime());
-            }
-        }
-
-        for (unsigned int i = 0; i < 2; i++)
-        {
-            if ((CheckCollisionRecs(heal[i].GetCollisionRec(AiPalm.getWorldPos()), AiPalm.getCollisionRec())) && (heal[i].getIsUsed() == false))
-            {
-                AiPalm.heal(heal[i].getSize());
-                heal[i].Used();
-            }
-        }
-
-        if (!AiPalm.getAlive()) // Character is dead
-        {
-            DrawRectangle(0.f, 0.f, Windowwidth, Windowheight, RED);
-            DrawText("Game Over", Windowwidth * 0.1f, Windowheight * 0.4f, 200, WHITE);
-            EndDrawing();
-            continue;
-        }
-        else
-        {
-            std::string knightHealth{""};
-            knightHealth.append(std::to_string(AiPalm.getHealth()), 0, 5);
-            DrawText(knightHealth.c_str(), Windowwidth * 0.42f, Windowheight * 0.015f, 50, WHITE);
-            std::string maxHp{""};
-            maxHp.append("/");
-            maxHp.append(std::to_string(AiPalm.getMaxHp()), 0, 3);
-            DrawText(maxHp.c_str(), Windowwidth * 0.48f, Windowheight * 0.015f, 50, WHITE);
-        }
-
-        if (AiPalm.getWorldPos().x < 0 || AiPalm.getWorldPos().y < 0 || // check out of bounds for character
-            (AiPalm.getWorldPos().x + Windowwidth > map.width * mapScale) ||
-            (AiPalm.getWorldPos().y + Windowheight > map.height * mapScale))
-        {
-            AiPalm.undoMovement();
-        }
-
-        for (auto enemy : enemies)
-        {
-            for (auto e : enemy)
-            {
-                if (e->getWorldPos().x < 310 * mapScale || e->getWorldPos().y < 170 * mapScale || // check out of bounds for enemy
-                    (e->getWorldPos().x + (340 * mapScale) > map.width * mapScale) ||
-                    (e->getWorldPos().y + (185 * mapScale) > map.height * mapScale))
+                if ((CheckCollisionRecs(heal[i].GetCollisionRec(AiPalm.getWorldPos()), AiPalm.getCollisionRec())) && (heal[i].getIsUsed() == false))
                 {
-                    e->undoMovement();
+                    AiPalm.heal(heal[i].getSize());
+                    heal[i].Used();
                 }
             }
-        }
 
-        for (auto prop : props)
-        { // Prop collision check
-            if (CheckCollisionRecs(prop.getCollisionRec(AiPalm.getWorldPos()), AiPalm.getCollisionRec()))
+            if (!AiPalm.getAlive()) // Character is dead
+            {
+                DrawRectangle(0.f, 0.f, Windowwidth, Windowheight, RED);
+                DrawText("Game Over", Windowwidth * 0.1f, Windowheight * 0.4f, 200, WHITE);
+                EndDrawing();
+                continue;
+            }
+            else
+            {
+                std::string knightHealth{""};
+                knightHealth.append(std::to_string(AiPalm.getHealth()), 0, 5);
+                DrawText(knightHealth.c_str(), Windowwidth * 0.42f, Windowheight * 0.015f, 50, WHITE);
+                std::string maxHp{""};
+                maxHp.append("/");
+                maxHp.append(std::to_string(AiPalm.getMaxHp()), 0, 3);
+                DrawText(maxHp.c_str(), Windowwidth * 0.48f, Windowheight * 0.015f, 50, WHITE);
+            }
+
+            if (AiPalm.getWorldPos().x < 0 || AiPalm.getWorldPos().y < 0 || // check out of bounds for character
+                (AiPalm.getWorldPos().x + Windowwidth > map.width * mapScale) ||
+                (AiPalm.getWorldPos().y + Windowheight > map.height * mapScale))
             {
                 AiPalm.undoMovement();
             }
@@ -201,57 +218,81 @@ int main()
             {
                 for (auto e : enemy)
                 {
-                    if (CheckCollisionRecs(prop.getCollisionRec(AiPalm.getWorldPos()), e->getCollisionRec()))
+                    if (e->getWorldPos().x < 310 * mapScale || e->getWorldPos().y < 170 * mapScale || // check out of bounds for enemy
+                        (e->getWorldPos().x + (340 * mapScale) > map.width * mapScale) ||
+                        (e->getWorldPos().y + (185 * mapScale) > map.height * mapScale))
                     {
                         e->undoMovement();
                     }
                 }
             }
-        }
 
-        for (auto enemy : enemies)
-        {
-            for (auto e : enemy)
-            {
-                if (!CheckCollisionRecs(AiPalm.getCollisionRec(), e->getCollisionRec()))
+            for (auto prop : props)
+            { // Prop collision check
+                if (CheckCollisionRecs(prop.getCollisionRec(AiPalm.getWorldPos()), AiPalm.getCollisionRec()))
                 {
-                    AiPalm.setKB_V(e->getScreenPos());
+                    AiPalm.undoMovement();
                 }
-            }
-        }
 
-        if (AiPalm.getAttacking() == true && AiPalm.checkDash() == false) // Attack
-        {
-            for (auto enemy : enemies)
-            {
-                for (auto e : enemy)
+                for (auto enemy : enemies)
                 {
-                    if (CheckCollisionRecs(AiPalm.getweaponColRec(), e->getCollisionRec()))
+                    for (auto e : enemy)
                     {
-                        e->takeDmg(AiPalm.getKB_V(), AiPalm.getKB());
-                        if (e->getAlive() == false && e->getErase() == false)
+                        if (CheckCollisionRecs(prop.getCollisionRec(AiPalm.getWorldPos()), e->getCollisionRec()))
                         {
-                            e->setErase(true);
-                            EnemyAmount--;
+                            e->undoMovement();
                         }
                     }
                 }
             }
-        }
-        // delete enemy when they're dead *****bug with vector<Enemy*>***** only work with normal pointer dynamic allocation
-        /*for (unsigned int i = 0; i < EnemyAmount ; i++){
-            if(!enemies->at(i)->getAlive()&&!isEnemyDead[i]){
-                isEnemyDead[i]=true;
-                delete &enemies[i];
+
+            for (auto enemy : enemies)
+            {
+                for (auto e : enemy)
+                {
+                    if (!CheckCollisionRecs(AiPalm.getCollisionRec(), e->getCollisionRec()))
+                    {
+                        AiPalm.setKB_V(e->getScreenPos());
+                    }
+                }
             }
-        }*/
 
-        if (EnemyAmount <= 0)
-        {
-            Init = true;
+            if (AiPalm.getAttacking() == true && AiPalm.checkDash() == false) // Attack
+            {
+                for (auto enemy : enemies)
+                {
+                    for (auto e : enemy)
+                    {
+                        if (CheckCollisionRecs(AiPalm.getweaponColRec(), e->getCollisionRec()))
+                        {
+                            e->takeDmg(AiPalm.getKB_V(), AiPalm.getKB());
+                            if (e->getAlive() == false && e->getErase() == false)
+                            {
+                                e->setErase(true);
+                                EnemyAmount--;
+                            }
+                        }
+                    }
+                }
+            }
+            // delete enemy when they're dead *****bug with vector<Enemy*>***** only work with normal pointer dynamic allocation
+            /*for (unsigned int i = 0; i < EnemyAmount ; i++){
+                if(!enemies->at(i)->getAlive()&&!isEnemyDead[i]){
+                    isEnemyDead[i]=true;
+                    delete &enemies[i];
+                }
+            }*/
+
+            if (EnemyAmount <= 0)
+            {
+                Init = true;
+            }
         }
-
         EndDrawing();
     }
+    CloseAudioDevice();
+    UnloadSound(BGM);
+    UnloadSound(Sword);
+    UnloadSound(Walk);
     CloseWindow();
 }

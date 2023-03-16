@@ -31,5 +31,8 @@ private:
     Rectangle weaponCollisionRec{};
     int health{100};
     int enemyAmount{};
+    Sound Aura;
+    Sound Ulti_sound;
+    Sound Dash_sound;
 };
 #endif

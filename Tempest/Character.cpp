@@ -15,6 +15,12 @@ Character::Character(int winWidth, int winHeight, int mapW, int mapH) : windowWi
     isEnemy = false;
     maxHealth = health;
     speed = 5.f;
+    Aura = LoadSound("sounds/aura.mp3");
+    Ulti_sound = LoadSound("sounds/ultimate_use.mp3");
+    Dash_sound = LoadSound("sounds/dash.mp3");
+    SetSoundVolume(Aura, 0.05f);
+    SetSoundVolume(Ulti_sound, 0.4f);
+    SetSoundVolume(Dash_sound, 0.1f);
 }
 
 Vector2 Character::getScreenPos()
@@ -43,6 +49,7 @@ void Character::tick(float deltaTime)
 
         if (Dash_Ani_holder >= 10)
         {
+            //StopSound(Dash_sound);
             Dashed = false;
             Dash_Ani_holder = 0;
             Dash_dir = {0.f, 0.f};
@@ -61,13 +68,14 @@ void Character::tick(float deltaTime)
                 velocity.y += speed;
         }
 
-        //DrawText(std::to_string(damage).c_str(), getScreenPos().x, getScreenPos().y + 100, 25, WHITE);
+        // DrawText(std::to_string(damage).c_str(), getScreenPos().x, getScreenPos().y + 100, 25, WHITE);
 
         if (Vector2Length(Vector2Scale(Vector2Normalize(velocity), speed)) != 0)
         {
 
             if (IsKeyPressed(KEY_SPACE) && Dashed == false && dash_interval == 1 && Attacking == false && charging == false)
             { // Dash Check
+                PlaySound(Dash_sound);
                 Dash_Ani_holder = 0;
                 Dash_dir = velocity;
                 Dashed = true;
@@ -185,6 +193,8 @@ void Character::tick(float deltaTime)
     // DrawText(std::to_string(Ulti / maxUlti).c_str(), 50, 200, 50, WHITE);
     if (IsKeyDown(KEY_LEFT_CONTROL) && Ulti < maxUlti && useUlti == false)
     {
+        if (charging == false)
+            PlaySound(Aura);
         charging = true;
         Ulticharge += deltaTime;
         if (Ulticharge > 1.f / 20.f)
@@ -195,10 +205,12 @@ void Character::tick(float deltaTime)
     }
     else
     {
+        StopSound(Aura);
         charging = false;
     }
     if (Ulti == maxUlti && useUlti == false)
     {
+        PlaySound(Ulti_sound);
         time_count = 0;
         Ulticharge = 0;
         useUlti = true;
@@ -231,6 +243,7 @@ void Character::tick(float deltaTime)
         }
         if (Ulti <= 0)
         {
+            StopSound(Ulti_sound);
             useUlti = false;
             Ulti = 0;
             speed -= 5;
