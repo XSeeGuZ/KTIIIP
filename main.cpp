@@ -30,7 +30,7 @@ void AddEnemy(vector<Enemy *> *ptr, Texture2D idle, Texture2D move, Texture2D ma
         ptr->push_back(new Enemy{idle,
                                  move,
                                  map.width,
-                                 map.height, 5.f, 5.f, RandomFloat(2.f, 2.4f)});
+                                 map.height, 4.f, RandomFloat(4.f, 7.f), RandomFloat(2.f, 2.4f)});
     }
     else if (type == "knight")
     {
@@ -73,17 +73,17 @@ int main()
 
     for (int i = 0; i < 12; i++)
     {
-        props.push_back(Prop{Vector2{(rand() % 1300 + 450) * mapScale, (rand() % 1550 + 280) * mapScale}, LoadTexture("tiles/log.png"), i});
+        props.push_back(Prop{Vector2{(rand() % 1240 + 400) * mapScale, (rand() % 1420 + 280) * mapScale}, LoadTexture("tiles/log.png"), i});
     }
 
     for (int i = 13; i < 33; i++)
     {
-        props.push_back(Prop{Vector2{(rand() % 1300 + 450) * mapScale, (rand() % 1510 + 280) * mapScale}, LoadTexture("tiles/rock.png"), i});
+        props.push_back(Prop{Vector2{(rand() % 1240 + 400) * mapScale, (rand() % 1420 + 280) * mapScale}, LoadTexture("tiles/rock.png"), i});
     }
 
     for (int i = 34; i <= 70; i++)
     {
-        props.push_back(Prop{Vector2{(rand() % 1300 + 450) * mapScale, (rand() % 1510 + 280) * mapScale}, LoadTexture("tiles/tree.png"), i});
+        props.push_back(Prop{Vector2{(rand() % 1240 + 400) * mapScale, (rand() % 1420 + 280) * mapScale}, LoadTexture("tiles/tree.png"), i});
     }
 
     Heal *heal = new Heal[7];
